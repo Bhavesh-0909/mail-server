@@ -22,10 +22,6 @@ const server = new SMTPServer({
           console.error("Missing from/to in email headers:", parsed);
           return callback(); // skip saving malformed email
         }
-        console.log("parsed", parsed);
-        console.log("from", fromAddress);
-        console.log("to", toAddress);
-        console.log("subject", emailSubject);
         
         db.insert(emails).values({  // Change "emails" string to emails object
           from: fromAddress,

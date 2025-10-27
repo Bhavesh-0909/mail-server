@@ -1,6 +1,6 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";
-import {config} from "dotenv";
+import { config } from "dotenv";
 
 config();
 
@@ -12,3 +12,5 @@ const client = new pg.Client({
 await client.connect();
 
 export const db = drizzle(client);
+
+console.log("✅ Database connected successfully");

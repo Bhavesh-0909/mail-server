@@ -32,6 +32,8 @@ function generateMessageHash(from, subject, date) {
 
 const server = new SMTPServer({
   authOptional: true,
+  disabledCommands: ['AUTH'],
+  rejectUnauthorized: false,
   onData(stream, session, callback) {
     simpleParser(stream)
       .then(async parsed => {

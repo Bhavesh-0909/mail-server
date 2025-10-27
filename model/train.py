@@ -5,46 +5,29 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 import joblib
 
-# 1. Sample Data (In a real project, you'd load a large CSV)
-# We'll create a simple dataset to get started.
-data = {
-    'text': [
-        "Free entry in 2 a wkly comp to win FA Cup final tkts 21st May 2005.",  # spam
-        "URGENT! You have won a 1 week FREE membership in our £100,000 Prize Jackpot!",  # spam
-        "Hey, are you coming to the meeting tomorrow?",  # ham
-        "I'm at the office. Please call me when you get a chance.",  # ham
-        "Winner!! As a valued network customer you have been selected to receivea £900 prize reward!",  # spam
-        "Hi mom, I'll be home late tonight.",  # ham
-        "Can you pick up groceries on your way home?",  # ham
-        "This is an important security notice for your account.",  # important (but we'll label as ham for this simple model)
-        "Don't forget to submit your project report by Friday.", # ham
-        "Click here to claim your free iPhone 15." # spam
-    ],
-    'label': [
-        'spam',
-        'spam',
-        'ham',
-        'ham',
-        'spam',
-        'ham',
-        'ham',
-        'ham', # Labeled 'ham' for simplicity. Your 'important' label would go here.
-        'ham',
-        'spam'
-    ]
-}
+try:
+    df = pd.read_csv('email_spam.csv')
+    # Ensure the required columns exist
+    if not all(col in df.columns for col in ['text', 'label']):
+        raise ValueError("CSV must contain 'text' and 'label' columns")
+except FileNotFoundError:
+    print("Error: email_spam.csv file not found")
+    exit(1)
+except Exception as e:
+    print(f"Error loading CSV: {str(e)}")
+    exit(1)
 
-df = pd.DataFrame(data)
+# --- THIS IS THE FIX ---
+# Drop any rows where the 'text' column is blank (NaN)
+print(f"Original data shape: {df.shape}")
+df.dropna(subset=['text'], inplace=True)
+print(f"Data shape after dropping NaNs: {df.shape}")
+# ---------------------
 
 # Split the data
 X_train, X_test, y_train, y_test = train_test_split(df['text'], df['label'], random_state=42)
 
 # 2. Create an ML Pipeline
-# A pipeline makes our model clean and easy to deploy.
-# It chains together the steps:
-#   a) TfidfVectorizer: Converts raw text into numerical features (TF-IDF).
-#   b) MultinomialNB: A classic, fast, and effective model for text classification (Naive Bayes).
-
 model_pipeline = Pipeline([
     ('vectorizer', TfidfVectorizer()),
     ('classifier', MultinomialNB())
